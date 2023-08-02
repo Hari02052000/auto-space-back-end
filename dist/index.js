@@ -1,0 +1,33 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const morgan_1 = __importDefault(require("morgan"));
+const userRoutes_1 = __importDefault(require("./routes/userRoutes"));
+const adminRoutes_1 = __importDefault(require("./routes/adminRoutes"));
+const userProductRoutes_1 = __importDefault(require("./routes/userProductRoutes"));
+const adminProductRoutes_1 = __importDefault(require("./routes/adminProductRoutes"));
+const adminUserRoutes_1 = __importDefault(require("./routes/adminUserRoutes"));
+const adminBrandRoutes_1 = __importDefault(require("./routes/adminBrandRoutes"));
+require("./connection/mongooseConnection");
+dotenv_1.default.config({ path: './.env' });
+const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
+app.use((0, morgan_1.default)('dev'));
+app.use(express_1.default.urlencoded({ extended: true }));
+app.use(express_1.default.json());
+app.use('/product', userProductRoutes_1.default);
+app.use('/user/products', userProductRoutes_1.default);
+app.use('/user', userRoutes_1.default);
+app.use('/admin/products', adminProductRoutes_1.default);
+app.use('/admin/users', adminUserRoutes_1.default);
+app.use('/admin/brand', adminBrandRoutes_1.default);
+app.use('/admin/model', adminBrandRoutes_1.default);
+app.use('/admin/option', adminBrandRoutes_1.default);
+app.use('/admin', adminRoutes_1.default);
+app.listen(3000, () => console.log('server started...'));
+//# sourceMappingURL=index.js.map
