@@ -51,7 +51,7 @@ const createToken=(id:string)=>{
  async function register(req:Request,res:Response){
 
      try{
-           
+           console.log(req.body)
         const {email,password,confpassword,username } = req.body as userRequestInterface
 
         if(password != confpassword){

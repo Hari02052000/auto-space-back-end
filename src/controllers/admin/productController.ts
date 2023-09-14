@@ -5,13 +5,10 @@ import brandschema from "../../models/modelSchema"
 
 
 async function getProducts(req:Request,res:Response){
-      console.log('start')
-
       
   
          const products =  await productschema.find().populate('brand').populate('model').populate('option')
           
-         console.log('product geted')
          res.json({products:products})
 }
 

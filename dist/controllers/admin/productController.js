@@ -5,9 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const productSchema_1 = __importDefault(require("../../models/productSchema"));
 async function getProducts(req, res) {
-    console.log('start');
     const products = await productSchema_1.default.find().populate('brand').populate('model').populate('option');
-    console.log('product geted');
     res.json({ products: products });
 }
 async function listProduct(req, res) {

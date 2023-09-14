@@ -1,14 +1,21 @@
 import mongoose, {Schema,Document} from "mongoose";
 import bcrypt from "bcrypt"
 
+interface userprofile{
+    URL:string,
+    cloudinary_id:string
+
+}
+
  interface userInterface extends Document {
 
     email:string,
     password:string,
     isverified:boolean,
     isBlocked:boolean,
-    username:string
-    products?:Schema.Types.ObjectId[]
+    username:string,
+    subscription:Schema.Types.ObjectId,
+    profile:userprofile
 
 }
 
@@ -39,16 +46,29 @@ import bcrypt from "bcrypt"
 
 
             },
-            products:[
+            subscription:
                 {
                  type:Schema.Types.ObjectId,
-                 ref:'products'
+                 ref:'subscription'
 
+                },
+            
+            profile:{
+                URL:{
+                    type:String,
+                    default:'https://res.cloudinary.com/dgblwidrj/image/upload/v1694673343/evkxq9lute2zbobaf964.png'
+                },
+                cloudinary_id:{
+                    type:String,
+                    default:'evkxq9lute2zbobaf964'
                 }
-            ] 
+                
+            }
+
 
    })
-
+// URL:'https://res.cloudinary.com/dgblwidrj/image/upload/v1694673343/evkxq9lute2zbobaf964.png'
+// cloudinary_id:'evkxq9lute2zbobaf964'
 
 userSchema.pre('save',async function(next){
     this.password= await bcrypt.hash(this.password,12);

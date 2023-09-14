@@ -10,6 +10,7 @@ const isAuth_1 = __importDefault(require("../helpers/isAuth"));
 const router = (0, express_1.Router)();
 router.get('/get-products', isAuth_1.default.isBlocked, userProductController_1.default.getProducts);
 router.get('/get-brands', isAuth_1.default.isBlocked, userProductController_1.default.getBrands);
+router.get('/search-products', isAuth_1.default.isBlocked, userProductController_1.default.searchProduct);
 router.post('/add-product', isAuth_1.default.isAuth, multer_1.default.uploadFiles, userProductController_1.default.addProduct);
 //router.post('/get-products',userProductController.getProducts)
 exports.default = router;

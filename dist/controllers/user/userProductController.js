@@ -7,68 +7,16 @@ const productSchema_1 = __importDefault(require("../../models/productSchema"));
 const brandSchema_1 = __importDefault(require("../../models/brandSchema"));
 const optionSchema_1 = __importDefault(require("../../models/optionSchema"));
 const modelSchema_1 = __importDefault(require("../../models/modelSchema"));
-const userSchema_1 = __importDefault(require("../../models/userSchema"));
-const cloudinery_1 = __importDefault(require("../../helpers/cloudinery"));
 async function getProducts(req, res) {
     try {
-        // interface regexInterface{
-        //     $regex:string
-        //     $options:String
-        // }
-        // interface queryInterface{
-        //     isListed:boolean
-        //     $or?:[
-        //         {
-        //             'brand.name':regexInterface
-        //         },
-        //         {
-        //             'model.name':regexInterface
-        //         },
-        //         {
-        //             'option.name':regexInterface
-        //         }
-        //     ]
-        //     brand?:string
-        // }
-        // console.log('geting')
-        // const limit = 10
-        // interface requestInterface{
-        //     search?:string
-        //     brand?:string
-        //     sortBy?:string
-        //     sortOrder?:string
-        //     page?:number
-        // }
-        // const {
-        //  search,
-        //  brand,
-        //  sortBy,
-        //  sortOrder,
-        //  page
-        // } = req.query as requestInterface
-        //  const query:queryInterface = {
-        //    isListed:false
-        //  }
-        //  if(search){
-        //     query.$or = [
-        //         {
-        //             'brand.name':{$regex:search,$options:'i'}
-        //         },
-        //         {
-        //             'model.name':{$regex:search,$options:'i'}
-        //         },
-        //         {
-        //             'option.name':{$regex:search,$options:'i'}
-        //         }
-        //     ]
-        //  }
-        //  if(brand) {
-        //     query.brand = brand
-        //  }
+        const filter = {
+            isListed: true,
+        };
+        if (res.locals.userid) {
+            filter.user = { $ne: res.locals.userid };
+        }
         const brands = await brandSchema_1.default.find();
-        //  const products = await productModel.find(query)
-        //  console.log(products)
-        const products = await productSchema_1.default.find({ isListed: true }).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' });
+        const products = await productSchema_1.default.find(filter).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' });
         res.json({ products: products, brands: brands });
     }
     catch (err) {
@@ -93,15 +41,52 @@ async function getBrands(req, res) {
     }
 }
 async function addProduct(req, res) {
-    let { brand, model, option, price, year, fuel, kmDriven, location, no_of_owners } = JSON.parse(req.body.formFields);
-    let images = await cloudinery_1.default.multiFiles(req.files);
-    const newProduct = await productSchema_1.default.create({ brand, model, option, price, year, fuel, kmDriven, Location: location, no_of_owners, images });
-    const email = res.locals.user?.email;
-    if (email)
-        await userSchema_1.default.findOneAndUpdate({ email: email }, { $addToSet: { products: newProduct._id } });
-    res.json({ productAdded: true });
+    //  let{brand,model,option,price,year,fuel,kmDriven,location,no_of_owners}=JSON.parse(req.body.formFields)
+    //  let images = await cloudinery.multiFiles(req.files as Express.Multer.File[])
+    //  const userid = res.locals.userid
+    //  const date = new Date()
+    //  const newProduct =  await productModel.create({brand,model,option,price,year,fuel,kmDriven,Location:location,no_of_owners,images,user:userid,date:date})
+    //   const email = res.locals.user?.email
+    //  if(email)
+    //  await userschema.findOneAndUpdate({email:email},{$addToSet:{products:newProduct._id}})
+    //   res.json({productAdded:true});
+    // cheak user product count is greater than limit
+}
+async function searchProduct(req, res) {
+    let { search, sort, sortBy, filter } = req.query;
+    console.log(req.query);
+    const query = {
+        isListed: true
+    };
+    if (search == 'undefined') {
+        search = '';
+    }
+    if (filter != 'undefined') {
+        query.brand = filter;
+    }
+    if (res.locals.userid) {
+        query.user = { $ne: res.locals.userid };
+    }
+    let products = (await productSchema_1.default.find(query).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' }))
+        .filter((products) => {
+        const regex = new RegExp(search, 'i');
+        return (products.brand.name.match(regex) ||
+            products.model.name.match(regex) ||
+            products.option.name.match(regex));
+    });
+    if (sortBy === 'km' || sortBy == 'price') {
+        let sortOrder;
+        sort == 'asc' ? sortOrder = 1 : sortOrder = -1;
+        if (sortBy === 'km') {
+            products = products.sort((a, b) => sortOrder * (a.kmDriven - b.kmDriven));
+        }
+        else {
+            products = products.sort((a, b) => sortOrder * (a.price - b.price));
+        }
+    }
+    res.json({ products });
 }
 exports.default = {
-    getProducts, getBrands, addProduct
+    getProducts, getBrands, addProduct, searchProduct
 };
 //# sourceMappingURL=userProductController.js.map

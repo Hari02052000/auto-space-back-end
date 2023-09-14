@@ -50,13 +50,23 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'please provide username']
     },
-    products: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'products'
+    subscription: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'subscription'
+    },
+    profile: {
+        URL: {
+            type: String,
+            default: 'https://res.cloudinary.com/dgblwidrj/image/upload/v1694673343/evkxq9lute2zbobaf964.png'
+        },
+        cloudinary_id: {
+            type: String,
+            default: 'evkxq9lute2zbobaf964'
         }
-    ]
+    }
 });
+// URL:'https://res.cloudinary.com/dgblwidrj/image/upload/v1694673343/evkxq9lute2zbobaf964.png'
+// cloudinary_id:'evkxq9lute2zbobaf964'
 userSchema.pre('save', async function (next) {
     this.password = await bcrypt_1.default.hash(this.password, 12);
     next();

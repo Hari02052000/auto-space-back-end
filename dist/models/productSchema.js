@@ -40,6 +40,15 @@ const productSchema = new mongoose_1.Schema({
         ref: 'option',
         required: true
     },
+    user: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    },
+    date: {
+        type: Date,
+        required: true
+    },
     price: {
         type: Number,
         required: true

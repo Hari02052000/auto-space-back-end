@@ -9,25 +9,30 @@ const sendmail_1 = __importDefault(require("./sendmail"));
 function isAuth(req, res, next) {
     let user = undefined;
     const headers = req.headers.usertoken;
+    console.log(headers);
     if (typeof headers === 'string') {
         const token = headers.split(' ')[1];
         if (token) {
             jsonwebtoken_1.default.verify(token, 'key1', async (err, decoded) => {
-                if (err)
+                if (err) {
                     res.json({ err: err });
+                }
                 else if (decoded) {
-                    const decodedPayload = decoded; // Type assertion
+                    const decodedPayload = decoded;
                     user = await userSchema_1.default.findOne({ _id: decodedPayload.id });
-                    res.locals.user = user;
                     if (user?.isBlocked) {
+                        console.log('blocked');
                         return res.json({ err: 'user blocked' });
                     }
                     if (!(user?.isverified)) {
                         if (user)
                             sendmail_1.default.sendOtp(user.email);
                         res.locals.email = user?.email;
+                        console.log('email not verified');
                         return res.json({ err: 'user not verified' });
                     }
+                    res.locals.userid = user?._id;
+                    console.log('next');
                     next();
                 }
             });
@@ -42,16 +47,17 @@ function isBlocked(req, res, next) {
     const headers = req.headers.usertoken;
     if (typeof headers === 'string') {
         const token = headers.split(' ')[1];
-        if (token) {
+        if (token != 'null') {
             jsonwebtoken_1.default.verify(token, 'key1', async (err, decoded) => {
                 if (err)
                     res.json({ err: err });
                 else if (decoded) {
-                    const decodedPayload = decoded; // Type assertion
+                    const decodedPayload = decoded;
                     user = await userSchema_1.default.findOne({ _id: decodedPayload.id });
                     if (user?.isBlocked) {
                         return res.json({ err: 'user blocked' });
                     }
+                    res.locals.userid = user?._id;
                     next();
                 }
             });
@@ -62,7 +68,7 @@ function isBlocked(req, res, next) {
     }
 }
 function changePasswordToken(req, res, next) {
-    const headers = req.headers.Authorization;
+    const headers = req.headers.authorization;
     if (typeof headers === 'string') {
         const token = headers.split(' ')[1];
         if (token) {

@@ -1,6 +1,6 @@
 import mongoose, {Schema,Document} from "mongoose";
 
-interface optionInterface extends Document {
+export interface optionInterface extends Document {
     name:string,
     
 } 

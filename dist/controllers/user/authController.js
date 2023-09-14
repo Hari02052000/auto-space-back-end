@@ -34,6 +34,7 @@ async function login(req, res) {
 }
 async function register(req, res) {
     try {
+        console.log(req.body);
         const { email, password, confpassword, username } = req.body;
         if (password != confpassword) {
             return res.json({ err: 'passwords are not equal' });

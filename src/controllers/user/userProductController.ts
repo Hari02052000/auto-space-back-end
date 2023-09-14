@@ -5,90 +5,35 @@ import optionSchema from "../../models/optionSchema"
 import modelschema from "../../models/modelSchema"
 import userschema from "../../models/userSchema"
 import cloudinery from "../../helpers/cloudinery"
+import mongoose from "mongoose"
 
 async function getProducts(req:Request,res:Response){
 
     try{
-    
-        
-        // interface regexInterface{
-        //     $regex:string
-        //     $options:String
-        // }
-         
-        // interface queryInterface{
-        //     isListed:boolean
-        //     $or?:[
-        //         {
-        //             'brand.name':regexInterface
-        //         },
-        //         {
-        //             'model.name':regexInterface
-        //         },
-        //         {
-        //             'option.name':regexInterface
-        //         }
 
+        interface notUser{
+            $ne:mongoose.Types.ObjectId
+        }
 
-        //     ]
-        //     brand?:string
-        // }
+        interface filterInterface{
+            isListed:boolean,
+            user?:notUser
+        }
 
-        // console.log('geting')
+        const filter:filterInterface={
+            isListed:true,
 
-        // const limit = 10
-
-        // interface requestInterface{
-
-        //     search?:string
-        //     brand?:string
-        //     sortBy?:string
-        //     sortOrder?:string
-        //     page?:number
-   
-
-        // }
+        }
       
-        // const {
-        //  search,
-        //  brand,
-        //  sortBy,
-        //  sortOrder,
-        //  page
-        // } = req.query as requestInterface
-         
-        //  const query:queryInterface = {
-        //    isListed:false
-        //  }
-          
-           
+        if(res.locals.userid){
+          filter.user = {$ne:res.locals.userid}
+        }
 
-        //  if(search){
-        //     query.$or = [
-        //         {
-        //             'brand.name':{$regex:search,$options:'i'}
-        //         },
-        //         {
-        //             'model.name':{$regex:search,$options:'i'}
-        //         },
-        //         {
-        //             'option.name':{$regex:search,$options:'i'}
-        //         }
-
-
-        //     ]
-            
-        //  }
-
-        //  if(brand) {
-        //     query.brand = brand
-        //  }
+        
 
           const brands = await brandSchema.find()
-        //  const products = await productModel.find(query)
-        //  console.log(products)
 
-         const products =  await productModel.find({isListed:true}).populate({path:'brand'}).populate({path:'model'}).populate({path:'option'})
+         const products =  await productModel.find(filter).populate({path:'brand'}).populate({path:'model'}).populate({path:'option'})
 
          res.json({products:products,brands:brands})
 
@@ -127,22 +72,94 @@ async function getProducts(req:Request,res:Response){
 
 async function addProduct(req:Request,res:Response){
 
-    let{brand,model,option,price,year,fuel,kmDriven,location,no_of_owners}=JSON.parse(req.body.formFields)
+    //  let{brand,model,option,price,year,fuel,kmDriven,location,no_of_owners}=JSON.parse(req.body.formFields)
 
-    let images = await cloudinery.multiFiles(req.files as Express.Multer.File[])
+    //  let images = await cloudinery.multiFiles(req.files as Express.Multer.File[])
+      
+    //  const userid = res.locals.userid
+    //  const date = new Date()
+    //  const newProduct =  await productModel.create({brand,model,option,price,year,fuel,kmDriven,Location:location,no_of_owners,images,user:userid,date:date})
+    //   const email = res.locals.user?.email
+    //  if(email)
+    //  await userschema.findOneAndUpdate({email:email},{$addToSet:{products:newProduct._id}})
+
+    //   res.json({productAdded:true});
+
+    // cheak user product count is greater than limit
 
 
-     const newProduct =  await productModel.create({brand,model,option,price,year,fuel,kmDriven,Location:location,no_of_owners,images})
-      const email = res.locals.user?.email
-      if(email)
-     await userschema.findOneAndUpdate({email:email},{$addToSet:{products:newProduct._id}})
+}
 
-      res.json({productAdded:true});
+async function searchProduct(req:Request,res:Response){
 
+    interface searchRequestInterface{
+        search:string,
+        sort:string,
+        sortBy:string,
+        filter:string
+
+    }
+    
+     let {search,sort,sortBy,filter} = req.query as unknown as searchRequestInterface
+     console.log(req.query)
+
+     const query:any = {
+        isListed:true
+     }
+
+     if(search=='undefined' ){
+        search = ''
+     }
+     if(filter !='undefined'){
+
+        query.brand = filter
+     }
+
+     if(res.locals.userid){
+        query.user = {$ne:res.locals.userid}
+      }
+
+     
+      let products =  ( await productModel.find(query).populate({path:'brand'}).populate({path:'model'}).populate({path:'option'}))
+      .filter((products)=>{
+
+        const regex = new RegExp(search, 'i');
+    
+      return (
+
+        products.brand.name.match(regex) ||
+        products.model.name.match(regex) ||
+        products.option.name.match(regex)
+  
+
+      ) 
+      })
+      if(sortBy === 'km'|| sortBy=='price'){
+        let sortOrder:number 
+        sort == 'asc' ? sortOrder = 1 : sortOrder = -1
+        if(sortBy==='km'){
+
+            products = products.sort((a, b) => sortOrder * (a.kmDriven - b.kmDriven));
+
+         
+        }
+
+        else{
+
+            products = products.sort((a, b) => sortOrder * (a.price - b.price));
+
+
+        }
+
+      }
+    
+    res.json({products})
+      
+    
 
 }
 
 
 export default {
-    getProducts,getBrands,addProduct
+    getProducts,getBrands,addProduct,searchProduct
 }

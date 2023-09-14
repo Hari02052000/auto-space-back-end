@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const authController_1 = __importDefault(require("../controllers/user/authController"));
 const isAuth_1 = __importDefault(require("../helpers/isAuth"));
+const userController_1 = __importDefault(require("../controllers/user/userController"));
 const router = (0, express_1.Router)();
 router.post('/register', authController_1.default.register);
 router.post('/login', authController_1.default.login);
@@ -13,5 +14,8 @@ router.post('/verify-otp', authController_1.default.verifyOtp);
 router.post('/verify-email', authController_1.default.verifyEmail);
 //here cheak using the changepassword token valid or not
 router.post('/change-password', isAuth_1.default.changePasswordToken, authController_1.default.changepassword);
+router.get('/profile', isAuth_1.default.isAuth, userController_1.default.getprofile);
+router.post('/edit-details', isAuth_1.default.isAuth, userController_1.default.editDetails);
+router.get('/get-messages', isAuth_1.default.isAuth, userController_1.default.getMessages);
 exports.default = router;
 //# sourceMappingURL=userRoutes.js.map

@@ -1,5 +1,8 @@
-import mongoose, {Schema,Document} from "mongoose";
-
+import mongoose, {Schema,Document,PopulatedDoc} from "mongoose";
+import { modelInterface  } from "./modelSchema"
+import { brandInterface } from "./brandSchema"
+import { optionInterface } from "./optionSchema"
+ 
 
 
 interface images {
@@ -9,11 +12,13 @@ interface images {
 
 interface productInterface extends Document {
 
-    brand:Schema.Types.ObjectId,
-    model:Schema.Types.ObjectId,
-    option:Schema.Types.ObjectId,
+    brand:PopulatedDoc<brandInterface>,
+    model:PopulatedDoc<modelInterface>,
+    option:PopulatedDoc<optionInterface>,
     price:number,
     year:number,
+    user:Schema.Types.ObjectId,
+    date:Date,
     fuel:string,
     kmDriven:number,
     Location:string,
@@ -47,6 +52,16 @@ const productSchema:Schema<productInterface> = new Schema({
        ref:'option',
        required:true
    },
+   user:{
+      type:Schema.Types.ObjectId,
+      ref:'user',
+      required:true
+  },
+  date:{
+   type:Date,
+   required:true
+  },
+
     price:{
        type:Number,
        required:true

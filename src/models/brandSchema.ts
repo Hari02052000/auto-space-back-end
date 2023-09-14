@@ -1,8 +1,9 @@
-import mongoose, {Schema,Document} from "mongoose";
+import mongoose, {Schema,Document,PopulatedDoc} from "mongoose";
+import { modelInterface  } from "./modelSchema"
 
-interface brandInterface extends Document {
+export interface brandInterface extends Document {
     name:string,
-    models:Schema.Types.ObjectId[],
+    models:PopulatedDoc<modelInterface>[],
     isListed:boolean
 } 
 

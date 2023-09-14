@@ -56,9 +56,6 @@ const createToken=(id:string)=>{
          const token = jwt.sign('adminPassword','key2')
          return res.json({verification:true,isChangingPassword:token})
    
-
-
-
        }
        else{
           res.json({err:'otp not verified'})
