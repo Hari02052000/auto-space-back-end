@@ -21,9 +21,9 @@ const userSubscriptionRoutes_1 = __importDefault(require("./routes/userSubscript
 const socketManeger_1 = __importDefault(require("./sockets/socketManeger"));
 require("./connection/mongooseConnection");
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)({ origin: '*' }));
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server);
-app.use((0, cors_1.default)({ origin: '*' }));
 app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use(express_1.default.json());

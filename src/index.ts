@@ -33,6 +33,9 @@ import  './connection/mongooseConnection'
 
 const app = express()
 
+app.use(cors({ origin: '*' }))
+
+
 const server = http.createServer(app); 
 const io = new SocketIOServer(server)
 
@@ -40,7 +43,6 @@ const io = new SocketIOServer(server)
 
 
 
-app.use(cors({ origin: '*' }))
 
 app.use(logger('dev'))
 app.use(express.urlencoded({extended:true}))
