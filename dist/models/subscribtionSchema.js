@@ -25,46 +25,29 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const subscriptionSchema = new mongoose_1.Schema({
-    name: {
-        type: String,
+    plan: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'plan',
         required: true
     },
-    isListed: {
-        type: Boolean,
-        default: true
-    },
-    isActive: {
-        type: Boolean,
-        default: false
-    },
-    no_of_cars: {
-        type: Number,
+    user: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: 'user',
         required: true
     },
-    validity_in_months: {
-        type: Number,
+    startDate: {
+        type: Date,
         required: true
     },
-    start_date: {
-        type: Date
-    },
-    end_date: {
-        type: Date
-    },
-    Amount: {
-        type: Number,
+    endDate: {
+        type: Date,
         required: true
     },
+    Amount: Number,
     isPayed: {
         type: Boolean,
         default: false
     },
-    subscribedUsers: [
-        {
-            type: mongoose_1.Schema.Types.ObjectId,
-            ref: 'user'
-        }
-    ]
 });
 const subscription = mongoose_1.default.model('subscription', subscriptionSchema);
 exports.default = subscription;

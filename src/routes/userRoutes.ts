@@ -13,7 +13,7 @@ router.post('/login',authController.login)
 router.post('/verify-otp',authController.verifyOtp)
 router.post('/verify-email',authController.verifyEmail)
 //here cheak using the changepassword token valid or not
-router.post('/change-password',authHelper.changePasswordToken,authController.changepassword)
+router.post('/change-password',authController.changepassword)
 router.get('/profile',authHelper.isAuth,userController.getprofile);
 router.post('/edit-details',authHelper.isAuth,userController.editDetails)
 router.get('/get-messages',authHelper.isAuth,userController.getMessages)

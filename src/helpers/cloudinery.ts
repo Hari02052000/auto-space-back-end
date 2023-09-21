@@ -6,12 +6,9 @@ const cloudinary = v2
   
 
 cloudinary.config({
-    cloud_name: 'dgblwidrj',
-    //process.env.cloud_name,
-    api_key:'443134725149471',
-    //process.env.api_key,
-    api_secret:'I-tYmqJ1J59c0yvDTsVJ0B70TsE'
-    //process.env.api_secret
+    cloud_name:process.env.cloud_name,
+    api_key:process.env.api_key,
+    api_secret:process.env.api_secret
   });
 
    async function multiFiles(imageFiles:Express.Multer.File[]){

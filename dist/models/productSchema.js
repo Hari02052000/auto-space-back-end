@@ -49,6 +49,12 @@ const productSchema = new mongoose_1.Schema({
         type: Date,
         required: true
     },
+    views: [
+        {
+            type: mongoose_1.Schema.Types.ObjectId,
+            ref: 'user'
+        }
+    ],
     price: {
         type: Number,
         required: true
@@ -84,7 +90,7 @@ const productSchema = new mongoose_1.Schema({
     },
     isListed: {
         type: Boolean,
-        default: false
+        default: true
     }
 });
 const product = mongoose_1.default.model('product', productSchema);

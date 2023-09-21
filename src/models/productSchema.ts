@@ -1,115 +1,122 @@
-import mongoose, {Schema,Document,PopulatedDoc} from "mongoose";
-import { modelInterface  } from "./modelSchema"
+import mongoose, { Schema, Document, PopulatedDoc } from "mongoose";
+import { modelInterface } from "./modelSchema"
 import { brandInterface } from "./brandSchema"
 import { optionInterface } from "./optionSchema"
- 
+
 
 
 interface images {
-    URL:string,
-    cloudinary_id:string
+   URL: string,
+   cloudinary_id: string
 }
 
 interface productInterface extends Document {
 
-    brand:PopulatedDoc<brandInterface>,
-    model:PopulatedDoc<modelInterface>,
-    option:PopulatedDoc<optionInterface>,
-    price:number,
-    year:number,
-    user:Schema.Types.ObjectId,
-    date:Date,
-    fuel:string,
-    kmDriven:number,
-    Location:string,
-     no_of_owners:number
-     images:images[],
-     isSold:boolean,
-     isBlocked:boolean,
-     isListed:boolean
+   brand: PopulatedDoc<brandInterface>,
+   model: PopulatedDoc<modelInterface>,
+   option: PopulatedDoc<optionInterface>,
+   price: number,
+   year: number,
+   user: Schema.Types.ObjectId,
+   date: Date,
+   fuel: string,
+   kmDriven: number,
+   Location: string,
+   no_of_owners: number
+   images: images[],
+   views: Schema.Types.ObjectId[],
+   isSold: boolean,
+   isBlocked: boolean,
+   isListed: boolean
 
-} 
-
-
-
+}
 
 
-const productSchema:Schema<productInterface> = new Schema({
-    
 
-    brand:{
-       type:Schema.Types.ObjectId,
-       ref:'brand',
-       required:true
-    },
-    model:{
-       type:Schema.Types.ObjectId,
-       ref:'model',
-       required:true
+
+
+const productSchema: Schema<productInterface> = new Schema({
+
+
+   brand: {
+      type: Schema.Types.ObjectId,
+      ref: 'brand',
+      required: true
    },
-    option:{
-       type:Schema.Types.ObjectId,
-       ref:'option',
-       required:true
+   model: {
+      type: Schema.Types.ObjectId,
+      ref: 'model',
+      required: true
    },
-   user:{
-      type:Schema.Types.ObjectId,
-      ref:'user',
-      required:true
-  },
-  date:{
-   type:Date,
-   required:true
-  },
-
-    price:{
-       type:Number,
-       required:true
+   option: {
+      type: Schema.Types.ObjectId,
+      ref: 'option',
+      required: true
    },
-    year:{
-       type:Number,
-       required:true
+   user: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true
    },
-    fuel:{
-       type:String,
-       required:true
+   date: {
+      type: Date,
+      required: true
    },
-    kmDriven:{
-       type:Number,
-       required:true
+   views: [
+      {
+         type: Schema.Types.ObjectId,
+         ref: 'user'
+      }
+   ],
+
+   price: {
+      type: Number,
+      required: true
    },
-    Location:{
-
-       type:String,
-       required:true
-
-    },
-    no_of_owners:{
-       type:Number,
-       required:true
+   year: {
+      type: Number,
+      required: true
    },
-    images:[],
+   fuel: {
+      type: String,
+      required: true
+   },
+   kmDriven: {
+      type: Number,
+      required: true
+   },
+   Location: {
 
-    isSold:{
-       type:Boolean,
-       default:false
-    },
+      type: String,
+      required: true
 
-    isBlocked:{
-       type:Boolean,
-       default:false
-    },
-    isListed:{
-        type:Boolean,
-        default:false
-    }
+   },
+   no_of_owners: {
+      type: Number,
+      required: true
+   },
+   images: [],
+
+   isSold: {
+      type: Boolean,
+      default: false
+   },
+
+   isBlocked: {
+      type: Boolean,
+      default: false
+   },
+   isListed: {
+      type: Boolean,
+      default: true
+   }
 
 
-   
-    
+
+
 
 })
 
-const product = mongoose.model('product',productSchema)
+const product = mongoose.model('product', productSchema)
 
 export default product

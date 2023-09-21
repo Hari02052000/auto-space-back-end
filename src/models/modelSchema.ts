@@ -1,26 +1,26 @@
-import mongoose, {Schema,Document} from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface modelInterface extends Document {
-    name:string,
-    options:Schema.Types.ObjectId[],
-    
-} 
+    name: string,
+    options: Schema.Types.ObjectId[],
 
-const modelSchema:Schema<modelInterface> = new Schema(
+}
+
+const modelSchema: Schema<modelInterface> = new Schema(
     {
-        name:{
-            type:String,
-            required:true,
-            
+        name: {
+            type: String,
+            required: true,
+
         },
-        options:[
+        options: [
             {
-                type:Schema.Types.ObjectId,
-                ref:'option'
+                type: Schema.Types.ObjectId,
+                ref: 'option'
             }
         ]
     },
 )
 
-const model = mongoose.model('model',modelSchema)
+const model = mongoose.model('model', modelSchema)
 export default model

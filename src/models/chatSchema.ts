@@ -1,40 +1,40 @@
-import mongoose, {Schema,Document, Mongoose} from "mongoose";
+import mongoose, { Schema, Document, Mongoose } from "mongoose";
 
 
 
 interface chatInterface extends Document {
-    members:[],
-    productId:Schema.Types.ObjectId,
-    latestMessage:string,
-    timestamps:Date
+    members: [],
+    productId: Schema.Types.ObjectId,
+    latestMessage: string,
+    timestamps: Date
 
 
-} 
+}
 
-const chatSchema:Schema<chatInterface> = new Schema(
+const chatSchema: Schema<chatInterface> = new Schema(
     {
-        members:[
+        members: [
             {
-                type:Schema.Types.ObjectId,
-                ref:'user'
+                type: Schema.Types.ObjectId,
+                ref: 'user'
             }
         ],
-        productId:{
-            type:Schema.Types.ObjectId,
-            ref:'product',
-            required:true
+        productId: {
+            type: Schema.Types.ObjectId,
+            ref: 'product',
+            required: true
         },
 
 
-        latestMessage:{
-            type:String
+        latestMessage: {
+            type: String
         },
 
-        timestamps:{
-            type:Date,
-            default:Date.now()
+        timestamps: {
+            type: Date,
+            default: Date.now()
         }
-    
+
 
     }
 
@@ -77,5 +77,5 @@ const chatSchema:Schema<chatInterface> = new Schema(
 //     }
 // )
 
-const chat = mongoose.model('chat',chatSchema)
+const chat = mongoose.model('chat', chatSchema)
 export default chat

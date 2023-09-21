@@ -26,8 +26,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.defaultProfileEnum = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+var defaultProfileEnum;
+(function (defaultProfileEnum) {
+    defaultProfileEnum["URL"] = "https://res.cloudinary.com/dgblwidrj/image/upload/v1694673343/evkxq9lute2zbobaf964.png";
+    defaultProfileEnum["cloudinary_id"] = "evkxq9lute2zbobaf964";
+})(defaultProfileEnum || (exports.defaultProfileEnum = defaultProfileEnum = {}));
 const userSchema = new mongoose_1.Schema({
     email: {
         type: String,
@@ -50,18 +56,22 @@ const userSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'please provide username']
     },
-    subscription: {
-        type: mongoose_1.Schema.Types.ObjectId,
-        ref: 'subscription'
+    alowedCars: {
+        type: Number,
+        default: 0
+    },
+    isTrailUsed: {
+        type: Boolean,
+        default: false
     },
     profile: {
         URL: {
             type: String,
-            default: 'https://res.cloudinary.com/dgblwidrj/image/upload/v1694673343/evkxq9lute2zbobaf964.png'
+            default: defaultProfileEnum.URL
         },
         cloudinary_id: {
             type: String,
-            default: 'evkxq9lute2zbobaf964'
+            default: defaultProfileEnum.cloudinary_id
         }
     }
 });

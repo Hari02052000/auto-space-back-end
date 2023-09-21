@@ -29,29 +29,48 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const chatHelper_1 = __importDefault(require("../helpers/chatHelpers/chatHelper"));
 const messageSchema_1 = __importStar(require("../models/messageSchema"));
 const chatSchema_1 = __importDefault(require("../models/chatSchema"));
+const userSchema_1 = __importDefault(require("../models/userSchema"));
 function socketHandilers(io) {
     const receversocketMap = new Map();
     const userSocketMap = new Map();
     const userNameSpace = io.of('/user-chat');
     const alert = io.of('/user-alert');
     alert.on('connection', async (socket) => {
+        console.log('connected to alert');
         const userToken = socket.handshake.auth.token;
         const alertUserid = await chatHelper_1.default.tokenValidate(userToken);
-        if (alertUserid == 'noUser') {
+        console.log(alertUserid);
+        if (alertUserid == 'noUser' || !alertUserid) {
+            alert.emit('noUser');
             socket.disconnect();
         }
-        receversocketMap.set(alertUserid, socket.id);
-        console.log('connected', alertUserid);
-        const count = await messageSchema_1.default.find({ $and: [{ _id: alertUserid }, { status: messageSchema_1.MessageStatus.Unread }] }).count();
-        const user = {
-            loged: true,
-            unreadMessages: count
-        };
-        alert.emit('connected', user);
-        await messageSchema_1.default.updateMany({ reciverId: alertUserid }, { $set: { status: messageSchema_1.MessageStatus.Delivered } });
-        socket.on('disconnect', () => {
-            receversocketMap.delete(alertUserid);
-        });
+        if (alertUserid != 'noUser') {
+            receversocketMap.set(alertUserid, socket.id);
+            console.log('connected', alertUserid);
+            const count = await messageSchema_1.default.find({
+                $and: [
+                    {
+                        reciverId: alertUserid
+                    },
+                    {
+                        status: messageSchema_1.MessageStatus.Unread
+                    }
+                ]
+            }).count();
+            console.log('unreadMessages', count);
+            const user = await userSchema_1.default.findOne({ _id: alertUserid });
+            const data = {
+                loged: true,
+                unreadMessages: count,
+                user: user
+            };
+            alert.emit('connected', data);
+            //  await messageSchema.updateMany({ reciverId: alertUserid }, { $set: { status: MessageStatus.Delivered } })
+            socket.on('disconnect', () => {
+                receversocketMap.delete(alertUserid);
+            });
+        }
+        // const count = await messageSchema.find({ $and: [{ _id: new ObjectId() }, { status: MessageStatus.Unread }] }).count()
     });
     userNameSpace.on('connection', async (socket) => {
         console.log('connected with socketid', socket.id);
@@ -75,7 +94,8 @@ function socketHandilers(io) {
                     productId: productid,
                     text: text
                 });
-                const chat = await chatSchema_1.default.findOneAndUpdate({ $and: [
+                const chat = await chatSchema_1.default.findOneAndUpdate({
+                    $and: [
                         {
                             members: { $all: [senderid, receverid] }
                         },
@@ -94,22 +114,17 @@ function socketHandilers(io) {
                 const receiverSocketId = userSocketMap.get(receverid);
                 const senderSocketId = userSocketMap.get(senderid);
                 const alertSocketId = receversocketMap.get(receverid);
-                if (alertSocketId) {
+                if (alertSocketId && !receiverSocketId) {
                     newMessage.status = messageSchema_1.MessageStatus.Delivered;
                     await newMessage.save();
-                    alert.to(alertSocketId).emit('newMessage', 'newMessageRecived');
+                    alert.to(alertSocketId).emit('newMessage', newMessage);
                 }
-                console.log('reciversocket', receiverSocketId);
-                console.log('sendersocket', senderSocketId);
-                console.log(userSocketMap);
                 if (receiverSocketId) {
-                    // update message status read
                     newMessage.status = messageSchema_1.MessageStatus.Read;
                     await newMessage.save();
                     userNameSpace.to(receiverSocketId).emit('chat-saved', newMessage);
                 }
                 if (senderSocketId) {
-                    console.log('sending to sender');
                     userNameSpace.to(senderSocketId).emit('chat-saved', newMessage);
                 }
             });

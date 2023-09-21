@@ -1,6 +1,15 @@
-import mongoose from "mongoose"; 
+import mongoose from "mongoose";
+
+if (process.env.db_connection) {
+
+    mongoose.connect(process.env.db_connection)
+    mongoose.connection.on('err', error => console.log(error))
+    mongoose.connection.once('open', () => console.log('connected to db'))
 
 
-mongoose.connect('mongodb://localhost:27017/auto-space')
-mongoose.connection.on('err',error=>console.log(error))
-mongoose.connection.once('open',()=>console.log('connected to db')) 
+}
+
+else {
+    console.log(process.env.db_connection)
+}
+

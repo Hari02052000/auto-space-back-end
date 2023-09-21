@@ -95,7 +95,7 @@ async function getChats(req, res) {
                 _id: 1,
                 productId: 1,
                 latestMessage: 1,
-                timestamps: 1,
+                timestamrps: 1,
                 sender: 1
             }
         },

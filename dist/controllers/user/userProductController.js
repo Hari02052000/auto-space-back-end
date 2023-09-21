@@ -7,6 +7,8 @@ const productSchema_1 = __importDefault(require("../../models/productSchema"));
 const brandSchema_1 = __importDefault(require("../../models/brandSchema"));
 const optionSchema_1 = __importDefault(require("../../models/optionSchema"));
 const modelSchema_1 = __importDefault(require("../../models/modelSchema"));
+const userSchema_1 = __importDefault(require("../../models/userSchema"));
+const cloudinery_1 = __importDefault(require("../../helpers/cloudinery"));
 async function getProducts(req, res) {
     try {
         const filter = {
@@ -41,6 +43,28 @@ async function getBrands(req, res) {
     }
 }
 async function addProduct(req, res) {
+    console.log(req.files);
+    console.log(req.body);
+    const userid = res.locals.userid;
+    const user = await userSchema_1.default.findOne({ _id: userid });
+    //find one subscription id is this userid end date greater than or equal to today
+    //if set allowed cars is zero and message plan expaired 
+    if (user) {
+        if (user.alowedCars > 0) {
+            let { brand, model, option, price, year, fuel, kmDriven, location, no_of_owners } = JSON.parse(req.body.formFields);
+            let images = await cloudinery_1.default.multiFiles(req.files);
+            const date = new Date();
+            const newProduct = await productSchema_1.default.create({ brand, model, option, price, year, fuel, kmDriven, Location: location, no_of_owners, images, user: userid, date: date });
+            await userSchema_1.default.findOneAndUpdate({ _id: userid }, { $inc: { alowedCars: -1 } });
+            return res.json({ productAdded: true });
+        }
+        else {
+            res.json({ err: 'alowedCars is zero' });
+        }
+    }
+    else {
+        res.json({ err: 'something went wrong please login again and continue' });
+    }
     //  let{brand,model,option,price,year,fuel,kmDriven,location,no_of_owners}=JSON.parse(req.body.formFields)
     //  let images = await cloudinery.multiFiles(req.files as Express.Multer.File[])
     //  const userid = res.locals.userid
@@ -86,7 +110,28 @@ async function searchProduct(req, res) {
     }
     res.json({ products });
 }
+async function getsingleProduct(req, res) {
+    const id = req.params.id;
+    console.log(id);
+    // port = 3000
+    // cloud_name= dgblwidrj
+    // api_key= 443134725149471
+    // api_secret=I-tYmqJ1J59c0yvDTsVJ0B70TsE
+    // cloudinary_folder_name=new
+    console.log(process.env.port);
+    console.log(process.env.cloud_name);
+    console.log(process.env.api_secret);
+    console.log(process.env.db_connection);
+    const product = await productSchema_1.default.findOne({ _id: id });
+    if (product) {
+        return res.json({ product: product });
+    }
+    else {
+        return res.json({ err: 'product not found' });
+    }
+}
 exports.default = {
-    getProducts, getBrands, addProduct, searchProduct
+    getProducts, getBrands, addProduct, searchProduct,
+    getsingleProduct
 };
 //# sourceMappingURL=userProductController.js.map

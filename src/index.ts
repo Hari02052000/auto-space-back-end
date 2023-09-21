@@ -5,6 +5,9 @@ import  logger from 'morgan'
 
 import http from 'http'; 
 
+ dotenv.config()
+
+
 import { Server as SocketIOServer} from 'socket.io'; 
 
 
@@ -16,15 +19,15 @@ import adminProductRoutes from './routes/adminProductRoutes'
 import adminUserRoutes from './routes/adminUserRoutes'
 import adminBrandRoutes from './routes/adminBrandRoutes'
 import chatRoute from './routes/userChatRoute'
+import subscriptionRoutes from './routes/userSubscriptionRoutes'
+
 import socketHandelers from './sockets/socketManeger'
-import alertsHandelers from './sockets/allerts'
 
 
 import  './connection/mongooseConnection'
 
 
 
-dotenv.config()
 
 
 
@@ -48,6 +51,7 @@ app.use('/product',usersProductRoutes)
 
 app.use('/user/products',usersProductRoutes)
 app.use('/user/chat', chatRoute);
+app.use('/user/subscription',subscriptionRoutes)
 app.use('/user',userRoutes)
 
 app.use('/admin/products',adminProductRoutes)

@@ -19,13 +19,6 @@ async function createBrand(req:Request,res:Response){
 
 async function getBrands(req:Request,res:Response){
 
-
-    //   const model = await modelSchema.create({name:'wagon '})
-    //   await brandModel.findOneAndUpdate({name:'maruthi'},{$addToSet:{models:model._id}})
-   // const option = await optionSchema.create({name:'zxi'})
-//    const option = await optionSchema.findOne({name:'zxi'})
-//     await modelSchema.findOneAndUpdate({name:'swfit'},{$addToSet:{options:option?._id}})
-
    try{
     await optionSchema.find()
     await modelSchema.find()

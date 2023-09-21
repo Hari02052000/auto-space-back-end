@@ -43,6 +43,10 @@ async function register(req, res) {
         if (isEmailExist) {
             return res.json({ err: 'email allredy exist' });
         }
+        const isUsernameExist = await userSchema_1.default.findOne({ username: username });
+        if (isUsernameExist) {
+            return res.json({ err: 'username allredy exist' });
+        }
         const user = await userSchema_1.default.create({ email, password, username });
         sendmail_1.default.sendOtp(user.email);
         const token = createToken(user._id);
@@ -54,14 +58,12 @@ async function register(req, res) {
 }
 async function verifyOtp(req, res) {
     try {
-        const { otp, isChangingPassword } = req.body;
-        const email = req.body.email || res.locals.email;
+        // const { otp, isChangingPassword } = req.body
+        // const email = req.body.email || res.locals.email
+        // const isVeryfied = sendmail.veryfyOtp(otp)
+        const { otp, email } = req.body;
         const isVeryfied = sendmail_1.default.veryfyOtp(otp);
         if (isVeryfied) {
-            if (isChangingPassword) {
-                const token = jsonwebtoken_1.default.sign('userPassword', 'key2');
-                return res.json({ verification: true, isChangingPassword: token });
-            }
             await userSchema_1.default.findOneAndUpdate({ email }, { $set: { isverified: true } });
             res.json({ verification: true });
         }
