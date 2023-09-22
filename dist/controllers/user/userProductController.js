@@ -77,7 +77,7 @@ async function addProduct(req, res) {
     // cheak user product count is greater than limit
 }
 async function searchProduct(req, res) {
-    let { search, sort, sortBy, filter } = req.query;
+    let { search, sortBy, filter } = req.query;
     console.log(req.query);
     const query = {
         isListed: true
@@ -98,13 +98,14 @@ async function searchProduct(req, res) {
             products.model.name.match(regex) ||
             products.option.name.match(regex));
     });
-    if (sortBy === 'km' || sortBy == 'price') {
+    if (sortBy === 'km asc' || sortBy == 'km dsc' || sortBy == 'price asc' || sortBy == 'price dsc') {
         let sortOrder;
-        sort == 'asc' ? sortOrder = 1 : sortOrder = -1;
-        if (sortBy === 'km') {
+        if (sortBy === 'km asc' || sortBy == 'km dsc') {
+            sortBy == 'km asc' ? sortOrder = 1 : sortOrder = -1;
             products = products.sort((a, b) => sortOrder * (a.kmDriven - b.kmDriven));
         }
-        else {
+        else if (sortBy == 'price asc' || sortBy == 'price dsc') {
+            sortBy == 'price asc' ? sortOrder = 1 : sortOrder = -1;
             products = products.sort((a, b) => sortOrder * (a.price - b.price));
         }
     }

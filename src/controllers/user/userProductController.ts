@@ -132,7 +132,7 @@ async function searchProduct(req: Request, res: Response) {
 
     }
 
-    let { search, sort, sortBy, filter } = req.query as unknown as searchRequestInterface
+    let { search, sortBy, filter } = req.query as unknown as searchRequestInterface
     console.log(req.query)
 
     const query: any = {
@@ -166,17 +166,22 @@ async function searchProduct(req: Request, res: Response) {
 
             )
         })
-    if (sortBy === 'km' || sortBy == 'price') {
+    if (sortBy === 'km asc' || sortBy == 'km dsc'||sortBy == 'price asc'||sortBy == 'price dsc') {
         let sortOrder: number
-        sort == 'asc' ? sortOrder = 1 : sortOrder = -1
-        if (sortBy === 'km') {
+        if (sortBy === 'km asc'||sortBy == 'km dsc') {
+
+            sortBy == 'km asc' ? sortOrder = 1 : sortOrder = -1
+
 
             products = products.sort((a, b) => sortOrder * (a.kmDriven - b.kmDriven));
 
 
         }
 
-        else {
+        else if(sortBy == 'price asc'||sortBy == 'price dsc') {
+
+            sortBy == 'price asc' ? sortOrder = 1 : sortOrder = -1
+
 
             products = products.sort((a, b) => sortOrder * (a.price - b.price));
 
