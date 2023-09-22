@@ -1,7 +1,10 @@
 import { Request,Response } from "express"
-import userSchema from "../../models/userSchema"
+import userSchema, { defaultProfileEnum } from "../../models/userSchema"
 import productSchema  from "../../models/productSchema"
 import messageSchema, { MessageStatus } from "../../models/messageSchema"
+import cloudinery from "../../helpers/cloudinery"
+import sendmail from "../../helpers/sendmail"
+
 
 async function getprofile(req:Request,res:Response){
     const userid = res.locals.userid
@@ -47,10 +50,12 @@ async function getMessages(req:Request,res:Response){
 }
 
 async function editDetails(req:Request,res:Response){
-
+let isemailchange = false
+let isusernamechange =false
   console.log(req.body)
  const userid = res.locals.userid
  const user = await userSchema.findOne({_id:userid})
+ console.log(user)
  
  if(req.body.email){
   if(user?.email != req.body.email){
@@ -60,10 +65,16 @@ async function editDetails(req:Request,res:Response){
     return res.json({err:'email allredy exist'})
    }
 
+   await userSchema.findOneAndUpdate({_id:userid},{$set:{email:req.body.email,isverified:false}})
+
+   sendmail.sendOtp(req.body.email)
+    isemailchange = true
+   //res.json({updated:true,email:req.body.email,isEmailchange:true})
+
+
   }
 
   
-   await userSchema.findOneAndUpdate({_id:userid},{$set:{email:req.body.email}})
    
 
 
@@ -71,12 +82,93 @@ async function editDetails(req:Request,res:Response){
 
  if(req.body.username){
 
-  await userSchema.findOneAndUpdate({_id:userid},{$set:{username:req.body.username}})
+  if(user?.username != req.body.username){
+
+    const isusername = await userSchema.findOne({username:req.body.username})
+   if(isusername){
+    return res.json({err:'username allredy exist'})
+   }
+
+   await userSchema.findOneAndUpdate({_id:userid},{$set:{username:req.body.username}})
+   isusernamechange = true
+
+  }
+
+  
+   
+
+
+
 
  }
 
- res.json({updated:true})
+ if(isusernamechange ||  isemailchange){
 
+  if(isemailchange && isusernamechange){
+    return res.json({emailchange:true,usernamechange:true})
+  }
+
+  if(isemailchange){
+
+   return res.json({emailchange:true})
+  }
+
+  if(isusernamechange){
+
+    return res.json({usernamechange:true})
+
+
+  }
+
+
+ }
+
+ else{
+  return res.json({err:'all are same nothing to new'})
+ }
+
+
+}
+
+
+
+async function uploadProfile(req:Request,res:Response){
+
+  try{
+    console.log(req.body)
+    const userid = res.locals.userid
+    const user = await userSchema.findOne({ _id: userid })
+
+    if(user?.profile.URL==defaultProfileEnum.URL||user?.profile.cloudinary_id==defaultProfileEnum.cloudinary_id)
+    {
+      
+      let images = await cloudinery.multiFiles(req.files as Express.Multer.File[])
+
+      await userSchema.findOneAndUpdate({_id:userid},{$set:{profile:images[0]}})
+     return res.json({profileUpdated:true,profile:images[0]})
+
+
+    }
+    else{
+      if(user)
+       await cloudinery.deleteImage(user?.profile.cloudinary_id);
+
+       let images = await cloudinery.multiFiles(req.files as Express.Multer.File[])
+
+       await userSchema.findOneAndUpdate({_id:userid},{$set:{profile:images[0]}})
+      return res.json({profileUpdated:true,profile:images[0]})
+ 
+
+
+    }
+
+
+
+  }
+  catch(err){
+    res.json({err:'profile not updated'})
+    console.log(err)
+  }
 }
 
 
@@ -85,6 +177,4 @@ async function editDetails(req:Request,res:Response){
 
 
 
-
-
-export default {getprofile,getMessages,editDetails}
+export default {getprofile,getMessages,editDetails,uploadProfile}

@@ -1,4 +1,6 @@
 import { Router } from 'express'
+import userHelpers from "../helpers/multer"
+
 import authController  from '../controllers/user/authController'
 import authHelper from '../helpers/isAuth'
 import userController from '../controllers/user/userController'
@@ -12,7 +14,7 @@ router.post('/register',authController.register)
 router.post('/login',authController.login)
 router.post('/verify-otp',authController.verifyOtp)
 router.post('/verify-email',authController.verifyEmail)
-//here cheak using the changepassword token valid or not
+router.post('/upload-profile',authHelper.isAuth,userHelpers.uploadFiles,userController.uploadProfile)
 router.post('/change-password',authController.changepassword)
 router.get('/profile',authHelper.isAuth,userController.getprofile);
 router.post('/edit-details',authHelper.isAuth,userController.editDetails)

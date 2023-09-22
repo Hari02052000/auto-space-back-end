@@ -21,5 +21,20 @@ async function multiFiles(imageFiles) {
     }));
     return images;
 }
-exports.default = { multiFiles };
+async function deleteImage(id) {
+    try {
+        const result = await cloudinary.uploader.destroy(id);
+        return result;
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+//delete one image
+// const product= await productModel.findOne({_id:productId})
+// let removed= product.images.splice(image,1)//position of index
+// let result=await cloudinary.deleteImage(removed[0].cloudinary_id)
+//  await product.save()
+// res.json({imageRemoved:true})}
+exports.default = { multiFiles, deleteImage };
 //# sourceMappingURL=cloudinery.js.map

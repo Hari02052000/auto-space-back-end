@@ -112,17 +112,7 @@ async function searchProduct(req, res) {
 }
 async function getsingleProduct(req, res) {
     const id = req.params.id;
-    console.log(id);
-    // port = 3000
-    // cloud_name= dgblwidrj
-    // api_key= 443134725149471
-    // api_secret=I-tYmqJ1J59c0yvDTsVJ0B70TsE
-    // cloudinary_folder_name=new
-    console.log(process.env.port);
-    console.log(process.env.cloud_name);
-    console.log(process.env.api_secret);
-    console.log(process.env.db_connection);
-    const product = await productSchema_1.default.findOne({ _id: id });
+    const product = await productSchema_1.default.findOne({ _id: id }).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' });
     if (product) {
         return res.json({ product: product });
     }
@@ -130,8 +120,30 @@ async function getsingleProduct(req, res) {
         return res.json({ err: 'product not found' });
     }
 }
+async function getPostedProducts(req, res) {
+    const userid = res.locals.userid;
+    const products = await productSchema_1.default.find({ user: userid }).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' });
+    return res.json({ products: products });
+}
+async function getEditProduct(req, res) {
+    const id = req.params.id;
+    const product = await productSchema_1.default.findOne({ _id: id }).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' });
+    if (product) {
+        if (product.user == res.locals.userid) {
+            return res.json({ product: product });
+        }
+        else {
+            return res.json({ err: 'you canot edit this' });
+        }
+    }
+    else {
+        return res.json({ err: 'product not found' });
+    }
+}
 exports.default = {
     getProducts, getBrands, addProduct, searchProduct,
-    getsingleProduct
+    getsingleProduct,
+    getPostedProducts,
+    getEditProduct
 };
 //# sourceMappingURL=userProductController.js.map

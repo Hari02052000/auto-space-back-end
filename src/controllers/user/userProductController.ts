@@ -6,6 +6,7 @@ import modelschema from "../../models/modelSchema"
 import userschema from "../../models/userSchema"
 import cloudinery from "../../helpers/cloudinery"
 import mongoose from "mongoose"
+import products from "razorpay/dist/types/products"
 
 async function getProducts(req: Request, res: Response) {
 
@@ -193,17 +194,7 @@ async function searchProduct(req: Request, res: Response) {
 async function getsingleProduct(req:Request,res:Response) {
 
     const id = req.params.id
-    console.log(id)
-    // port = 3000
-    // cloud_name= dgblwidrj
-    // api_key= 443134725149471
-    // api_secret=I-tYmqJ1J59c0yvDTsVJ0B70TsE
-    // cloudinary_folder_name=new
-    console.log(process.env.port)
-    console.log(process.env.cloud_name)
-    console.log(process.env.api_secret)
-    console.log(process.env.db_connection)
-   const product = await productModel.findOne({_id:id})
+   const product = await productModel.findOne({_id:id}).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' })
 
     if(product){
         return res.json({product:product})
@@ -213,7 +204,41 @@ async function getsingleProduct(req:Request,res:Response) {
     }
 }
 
+async function getPostedProducts(req:Request,res:Response){
+    const userid = res.locals.userid
+
+    const products = await productModel.find({user:userid}).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' }) 
+
+
+   return res.json({products:products})
+}
+
+async function getEditProduct(req:Request,res:Response){
+
+    const id = req.params.id
+    const product = await productModel.findOne({_id:id}).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' })
+ 
+     if(product){
+        if(product.user == res.locals.userid){
+
+            return res.json({product:product})
+
+
+        }
+        else{
+
+            return res.json({err:'you canot edit this'})
+        }
+     }
+     else{
+         return res.json({err:'product not found'})
+     }
+ 
+}
+
 export default {
     getProducts, getBrands, addProduct, searchProduct,
-    getsingleProduct
+    getsingleProduct,
+    getPostedProducts,
+    getEditProduct
 }

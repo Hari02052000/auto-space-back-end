@@ -8,9 +8,10 @@ const router = Router()
 router.get('/get-products',authHelper.isBlocked,userProductController.getProducts)
 router.get('/get-brands',authHelper.isBlocked,userProductController.getBrands)
 router.get('/search-products',authHelper.isBlocked,userProductController.searchProduct)
+router.get('/edit-product/:id',authHelper.isAuth,userProductController.getEditProduct)
 router.post('/add-product',authHelper.isAuth,userHelpers.uploadFiles,userProductController.addProduct)
 router.get('/single-product/:id',authHelper.isBlocked,userProductController.getsingleProduct)
-
+router.get('/posted-products',authHelper.isAuth,userProductController.getPostedProducts)
 //router.post('/get-products',userProductController.getProducts)
 
 

@@ -26,9 +26,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const userSchema_1 = __importDefault(require("../../models/userSchema"));
+const userSchema_1 = __importStar(require("../../models/userSchema"));
 const productSchema_1 = __importDefault(require("../../models/productSchema"));
 const messageSchema_1 = __importStar(require("../../models/messageSchema"));
+const cloudinery_1 = __importDefault(require("../../helpers/cloudinery"));
+const sendmail_1 = __importDefault(require("../../helpers/sendmail"));
 async function getprofile(req, res) {
     const userid = res.locals.userid;
     await productSchema_1.default.find();
@@ -60,22 +62,71 @@ async function getMessages(req, res) {
     res.json({ messages: messages, product: product, logedUser: senderId, recever: recever });
 }
 async function editDetails(req, res) {
+    let isemailchange = false;
+    let isusernamechange = false;
     console.log(req.body);
     const userid = res.locals.userid;
     const user = await userSchema_1.default.findOne({ _id: userid });
+    console.log(user);
     if (req.body.email) {
         if (user?.email != req.body.email) {
             const isEmailExist = await userSchema_1.default.findOne({ email: req.body.email });
             if (isEmailExist) {
                 return res.json({ err: 'email allredy exist' });
             }
+            await userSchema_1.default.findOneAndUpdate({ _id: userid }, { $set: { email: req.body.email, isverified: false } });
+            sendmail_1.default.sendOtp(req.body.email);
+            isemailchange = true;
+            //res.json({updated:true,email:req.body.email,isEmailchange:true})
         }
-        await userSchema_1.default.findOneAndUpdate({ _id: userid }, { $set: { email: req.body.email } });
     }
     if (req.body.username) {
-        await userSchema_1.default.findOneAndUpdate({ _id: userid }, { $set: { username: req.body.username } });
+        if (user?.username != req.body.username) {
+            const isusername = await userSchema_1.default.findOne({ username: req.body.username });
+            if (isusername) {
+                return res.json({ err: 'username allredy exist' });
+            }
+            await userSchema_1.default.findOneAndUpdate({ _id: userid }, { $set: { username: req.body.username } });
+            isusernamechange = true;
+        }
     }
-    res.json({ updated: true });
+    if (isusernamechange || isemailchange) {
+        if (isemailchange && isusernamechange) {
+            return res.json({ emailchange: true, usernamechange: true });
+        }
+        if (isemailchange) {
+            return res.json({ emailchange: true });
+        }
+        if (isusernamechange) {
+            return res.json({ usernamechange: true });
+        }
+    }
+    else {
+        return res.json({ err: 'all are same nothing to new' });
+    }
 }
-exports.default = { getprofile, getMessages, editDetails };
+async function uploadProfile(req, res) {
+    try {
+        console.log(req.body);
+        const userid = res.locals.userid;
+        const user = await userSchema_1.default.findOne({ _id: userid });
+        if (user?.profile.URL == userSchema_1.defaultProfileEnum.URL || user?.profile.cloudinary_id == userSchema_1.defaultProfileEnum.cloudinary_id) {
+            let images = await cloudinery_1.default.multiFiles(req.files);
+            await userSchema_1.default.findOneAndUpdate({ _id: userid }, { $set: { profile: images[0] } });
+            return res.json({ profileUpdated: true, profile: images[0] });
+        }
+        else {
+            if (user)
+                await cloudinery_1.default.deleteImage(user?.profile.cloudinary_id);
+            let images = await cloudinery_1.default.multiFiles(req.files);
+            await userSchema_1.default.findOneAndUpdate({ _id: userid }, { $set: { profile: images[0] } });
+            return res.json({ profileUpdated: true, profile: images[0] });
+        }
+    }
+    catch (err) {
+        res.json({ err: 'profile not updated' });
+        console.log(err);
+    }
+}
+exports.default = { getprofile, getMessages, editDetails, uploadProfile };
 //# sourceMappingURL=userController.js.map

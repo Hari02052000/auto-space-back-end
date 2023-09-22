@@ -4,6 +4,7 @@ import userModel from "../../models/userSchema"
 
 
 async function tokenValidate(token: string): Promise<string> {
+    try{
     return new Promise<string>((resolve, reject) => {
         jwt.verify(token, 'key1', async (err, decoded) => {
             if (err) {
@@ -26,6 +27,13 @@ async function tokenValidate(token: string): Promise<string> {
             }
         });
     });
+}
+catch(err){
+    
+    console.log(err)
+
+    return('noUser')
+}
 }
 
 
