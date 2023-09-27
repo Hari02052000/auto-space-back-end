@@ -220,11 +220,13 @@ async function getPostedProducts(req:Request,res:Response){
 
 async function getEditProduct(req:Request,res:Response){
 
+
     const id = req.params.id
     const product = await productModel.findOne({_id:id}).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' })
+
  
      if(product){
-        if(product.user == res.locals.userid){
+        if(product.user+'' == res.locals.userid+''){
 
             return res.json({product:product})
 

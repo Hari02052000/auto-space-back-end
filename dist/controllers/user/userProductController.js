@@ -130,7 +130,7 @@ async function getEditProduct(req, res) {
     const id = req.params.id;
     const product = await productSchema_1.default.findOne({ _id: id }).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' });
     if (product) {
-        if (product.user == res.locals.userid) {
+        if (product.user + '' == res.locals.userid + '') {
             return res.json({ product: product });
         }
         else {

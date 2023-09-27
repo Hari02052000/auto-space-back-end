@@ -48,6 +48,7 @@ function socketHandilers(io) {
             if (alertUserid != 'noUser') {
                 receversocketMap.set(alertUserid, socket.id);
                 console.log('connected', alertUserid);
+                console.log(receversocketMap);
                 const count = await messageSchema_1.default.find({
                     $and: [
                         {
@@ -65,7 +66,9 @@ function socketHandilers(io) {
                     unreadMessages: count,
                     user: user
                 };
-                alert.emit('connected', data);
+                socket.join(alertUserid);
+                alert.to(alertUserid).emit('connected', data);
+                // alert.emit('connected', data)
                 //  await messageSchema.updateMany({ reciverId: alertUserid }, { $set: { status: MessageStatus.Delivered } })
                 socket.on('disconnect', () => {
                     receversocketMap.delete(alertUserid);
@@ -115,15 +118,17 @@ function socketHandilers(io) {
                     const receiverSocketId = userSocketMap.get(receverid);
                     const senderSocketId = userSocketMap.get(senderid);
                     const alertSocketId = receversocketMap.get(receverid);
-                    if (alertSocketId && !receiverSocketId) {
-                        newMessage.status = messageSchema_1.MessageStatus.Delivered;
-                        await newMessage.save();
-                        alert.to(alertSocketId).emit('newMessage', newMessage);
-                    }
                     if (receiverSocketId) {
                         newMessage.status = messageSchema_1.MessageStatus.Read;
                         await newMessage.save();
                         userNameSpace.to(receiverSocketId).emit('chat-saved', newMessage);
+                    }
+                    if (alertSocketId && !receiverSocketId) {
+                        newMessage.status = messageSchema_1.MessageStatus.Delivered;
+                        await newMessage.save();
+                        const alertMsg = newMessage;
+                        await alertMsg.populate('senderId');
+                        alert.to(alertSocketId).emit('newMessage', alertMsg);
                     }
                     if (senderSocketId) {
                         userNameSpace.to(senderSocketId).emit('chat-saved', newMessage);

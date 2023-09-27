@@ -9,7 +9,9 @@ async function tokenValidate(token: string): Promise<string> {
         jwt.verify(token, 'key1', async (err, decoded) => {
             if (err) {
                 console.log(err);
-                reject(err);
+                resolve('noUser');
+
+
             } else if (decoded) {
                 const decodedPayload = decoded as jwt.JwtPayload;
                 const user = await userModel.findOne({ _id: decodedPayload.id });

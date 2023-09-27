@@ -9,5 +9,6 @@ const userSubscriptionController_1 = __importDefault(require("../controllers/use
 const router = (0, express_1.Router)();
 router.get('/get-plans', isAuth_1.default.isBlocked, userSubscriptionController_1.default.getPlans);
 router.post('/create-payment', isAuth_1.default.isAuth, userSubscriptionController_1.default.createPayment);
+router.post('/verify-payment', isAuth_1.default.isAuth, userSubscriptionController_1.default.verifyOnlinePayment);
 exports.default = router;
 //# sourceMappingURL=userSubscriptionRoutes.js.map

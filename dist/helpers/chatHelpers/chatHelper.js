@@ -11,7 +11,7 @@ async function tokenValidate(token) {
             jsonwebtoken_1.default.verify(token, 'key1', async (err, decoded) => {
                 if (err) {
                     console.log(err);
-                    reject(err);
+                    resolve('noUser');
                 }
                 else if (decoded) {
                     const decodedPayload = decoded;
