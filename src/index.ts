@@ -66,4 +66,4 @@ app.use('/admin',adminRoutes)
 
 
 
-server.listen(process.env.port,()=>console.log('server started...'))
+server.listen(process.env.PORT,()=>console.log('server started...'))
