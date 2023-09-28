@@ -20,7 +20,7 @@ import adminUserRoutes from './routes/adminUserRoutes'
 import adminBrandRoutes from './routes/adminBrandRoutes'
 import chatRoute from './routes/userChatRoute'
 import subscriptionRoutes from './routes/userSubscriptionRoutes'
-
+import planRoutes from './routes/adminPlanRoutes'
 import socketHandelers from './sockets/socketManeger'
 
 
@@ -61,6 +61,8 @@ app.use('/admin/users',adminUserRoutes)
 app.use('/admin/brand',adminBrandRoutes)
 app.use('/admin/model',adminBrandRoutes)
 app.use('/admin/option',adminBrandRoutes)
+app.use('/admin/plans',planRoutes)
+
 app.use('/admin',adminRoutes)
 
 

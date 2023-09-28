@@ -7,13 +7,19 @@ const optionSchema_1 = __importDefault(require("../../models/optionSchema"));
 const modelSchema_1 = __importDefault(require("../../models/modelSchema"));
 const brandSchema_1 = __importDefault(require("../../models/brandSchema"));
 async function createBrand(req, res) {
-    const brand = req.body.brandName;
-    const isOldBrand = await brandSchema_1.default.findOne({ name: brand });
-    if (isOldBrand) {
-        return res.json({ err: 'brand name allredy exist' });
+    try {
+        console.log(req.body);
+        const brand = req.body.brandName;
+        const isOldBrand = await brandSchema_1.default.findOne({ name: brand });
+        if (isOldBrand) {
+            return res.json({ err: 'brand name allredy exist' });
+        }
+        const newBrand = await brandSchema_1.default.create({ name: brand });
+        res.json({ created: true, brand: newBrand });
     }
-    const newBrand = await brandSchema_1.default.create({ name: brand });
-    res.json({ created: true, brand: newBrand });
+    catch (err) {
+        console.log(err);
+    }
 }
 async function getBrands(req, res) {
     try {
@@ -41,14 +47,14 @@ async function addModel(req, res) {
     console.log(modelName, brandId);
     const model = await modelSchema_1.default.create({ name: modelName });
     await brandSchema_1.default.findOneAndUpdate({ _id: brandId }, { $addToSet: { models: model._id } });
-    const brand = await brandSchema_1.default.findOne({ _id: brandId }).populate({
-        path: 'models',
-        populate: {
-            path: 'options',
-            model: 'option'
-        }
-    }).exec();
-    res.json({ brand: brand, brandId: brandId, created: true });
+    // const brand = await brandModel.findOne({ _id: brandId }).populate({
+    //     path: 'models',
+    //     populate: {
+    //         path: 'options',
+    //         model: 'option'
+    //     }
+    // }).exec()
+    res.json({ model: model, brandId: brandId, created: true });
 }
 async function addOption(req, res) {
     const { optionName, brandId, modelId } = req.body;
@@ -75,5 +81,16 @@ async function addOption(req, res) {
     }).exec();
     res.json({ brand: brand, brandId: brandId, created: true });
 }
-exports.default = { createBrand, getBrands, addModel, addOption };
+async function editBrand(req, res) {
+    const { brandName, id } = req.body;
+    console.log(await brandSchema_1.default.findOne({ _id: id }));
+    const oldbrand = await brandSchema_1.default.findOne({ name: brandName });
+    console.log(oldbrand);
+    if (oldbrand) {
+        return res.json({ err: 'name allredy exist or nothing to update' });
+    }
+    await brandSchema_1.default.findOneAndUpdate({ _id: id }, { $set: { name: brandName } });
+    res.json({ edited: true });
+}
+exports.default = { createBrand, getBrands, addModel, addOption, editBrand };
 //# sourceMappingURL=brandController.js.map

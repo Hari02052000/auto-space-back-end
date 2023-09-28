@@ -4,10 +4,11 @@ import AuthHelpers from '../helpers/isAuth'
 
 const router = Router();
 
+
+
   
  router.get('/get-chat',AuthHelpers.isAuth,userChatController.getChats);
  
- router.post('/create-chat',AuthHelpers.isAuth,userChatController.createChat);
 
 
 

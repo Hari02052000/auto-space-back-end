@@ -4,9 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const userChatController_1 = __importDefault(require("../controllers/user/userChatController"));
-const isAuth_1 = __importDefault(require("../helpers/isAuth"));
+const adminPlanController_1 = __importDefault(require("../controllers/admin/adminPlanController"));
 const router = (0, express_1.Router)();
-router.get('/get-chat', isAuth_1.default.isAuth, userChatController_1.default.getChats);
+router.get('/get-plans', adminPlanController_1.default.getPlans);
 exports.default = router;
-//# sourceMappingURL=userChatRoute.js.map
+//# sourceMappingURL=adminPlanRoutes.js.map

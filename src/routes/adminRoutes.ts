@@ -3,6 +3,9 @@ import adminAuthController from '../controllers/admin/adminAuthController'
 
 const router = Router()
 
+
+router.get('/')
+
 router.post('/login',adminAuthController.login)
 router.post('/verify-email',adminAuthController.verifyEmail)
 router.post('/change-password',adminAuthController.changepassword)

@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken"
 import{Request,Response } from 'express'
 import bcrypt from 'bcrypt'
 import sendmail from "../../helpers/sendmail"
-
+import produtSchema from "../../models/productSchema"
+import brandSchema from "../../models/brandSchema"
 
 const maxage=3*24*60*60;
 const createToken=(id:string)=>{
@@ -101,5 +102,33 @@ async function changepassword(req:Request,res:Response){
    res.json({isPasswordChanged:true})
 }
 
+async function getCharts(req:Request,res:Response){
 
-export default {login,verifyEmail,verifyOtp,changepassword}
+   try {
+      const listingDistribution = await produtSchema.aggregate([
+        {
+          $group: {
+            _id: '$brandId', // Assuming 'brandId' represents the brand ID in your product schema.
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+
+      const brands = await brandSchema.find()
+  
+   
+      const labels = brands.map(brand=>brand.name)
+      const counts = listingDistribution.map((entry:any) => entry.count);
+  
+      res.json({ labels, counts });
+    } catch (error) {
+      console.error(error);
+    }
+  
+
+
+
+}
+
+
+export default {login,verifyEmail,verifyOtp,changepassword,getCharts}

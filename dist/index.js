@@ -18,6 +18,7 @@ const adminUserRoutes_1 = __importDefault(require("./routes/adminUserRoutes"));
 const adminBrandRoutes_1 = __importDefault(require("./routes/adminBrandRoutes"));
 const userChatRoute_1 = __importDefault(require("./routes/userChatRoute"));
 const userSubscriptionRoutes_1 = __importDefault(require("./routes/userSubscriptionRoutes"));
+const adminPlanRoutes_1 = __importDefault(require("./routes/adminPlanRoutes"));
 const socketManeger_1 = __importDefault(require("./sockets/socketManeger"));
 require("./connection/mongooseConnection");
 const app = (0, express_1.default)();
@@ -38,6 +39,7 @@ app.use('/admin/users', adminUserRoutes_1.default);
 app.use('/admin/brand', adminBrandRoutes_1.default);
 app.use('/admin/model', adminBrandRoutes_1.default);
 app.use('/admin/option', adminBrandRoutes_1.default);
+app.use('/admin/plans', adminPlanRoutes_1.default);
 app.use('/admin', adminRoutes_1.default);
 server.listen(process.env.PORT, () => console.log('server started...'));
 //# sourceMappingURL=index.js.map
