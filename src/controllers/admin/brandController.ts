@@ -4,6 +4,7 @@ import { Request, Response } from 'express'
 import optionSchema from "../../models/optionSchema"
 import modelSchema from "../../models/modelSchema"
 import brandModel from "../../models/brandSchema"
+import admin from "../../models/adminSchema"
 
 async function createBrand(req: Request, res: Response) {
 
@@ -31,6 +32,8 @@ async function createBrand(req: Request, res: Response) {
 }
 
 async function getBrands(req: Request, res: Response) {
+
+    //await admin.create({email:'admin@gmail.com',password:'Hari@1234'})
 
     try {
         await optionSchema.find()
@@ -87,15 +90,15 @@ async function addOption(req: Request, res: Response) {
 
         await modelSchema.findOneAndUpdate({ _id: modelId }, { $addToSet: { options: oldOption._id } })
 
-        const brand = await brandModel.findOne({ _id: brandId }).populate({
-            path: 'models',
-            populate: {
-                path: 'options',
-                model: 'option'
-            }
-        }).exec()
+        // const brand = await brandModel.findOne({ _id: brandId }).populate({
+        //     path: 'models',
+        //     populate: {
+        //         path: 'options',
+        //         model: 'option'
+        //     }
+        // }).exec()
 
-        return res.json({ brand: brand, brandId: brandId, created: true })
+        return res.json({ option:oldOption, brandId: brandId, created: true })
 
 
     }
@@ -104,15 +107,15 @@ async function addOption(req: Request, res: Response) {
 
     await modelSchema.findOneAndUpdate({ _id: modelId }, { $addToSet: { options: option?._id } })
 
-    const brand = await brandModel.findOne({ _id: brandId }).populate({
-        path: 'models',
-        populate: {
-            path: 'options',
-            model: 'option'
-        }
-    }).exec()
+    // const brand = await brandModel.findOne({ _id: brandId }).populate({
+    //     path: 'models',
+    //     populate: {
+    //         path: 'options',
+    //         model: 'option'
+    //     }
+    // }).exec()
 
-    res.json({ brand: brand, brandId: brandId, created: true })
+    res.json({ option:option, brandId: brandId, created: true })
 
 
 }
@@ -133,10 +136,20 @@ async function editBrand(req: Request, res: Response) {
 }
 
 
+async function editmodel(req: Request, res: Response) {
+
+}
+
+async function editoption(req: Request, res: Response) {
+
+}
 
 
 
 
 
 
-export default { createBrand, getBrands, addModel, addOption, editBrand }
+
+
+
+export default { createBrand, getBrands, addModel, addOption, editBrand,editmodel,editoption }

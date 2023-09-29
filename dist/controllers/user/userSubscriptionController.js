@@ -10,7 +10,7 @@ const razorpay_1 = __importDefault(require("razorpay"));
 const crypto_1 = __importDefault(require("crypto"));
 async function getPlans(req, res) {
     try {
-        const plans = await plansSchema_1.default.find();
+        const plans = await plansSchema_1.default.find({ isListed: true });
         res.json({ plans: plans });
     }
     catch (err) {

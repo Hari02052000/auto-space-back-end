@@ -14,7 +14,7 @@ async function getPlans(req: Request, res: Response) {
 
     try {
 
-        const plans = await plansModel.find()
+        const plans = await plansModel.find({isListed:true})
         res.json({ plans: plans })
     }
 

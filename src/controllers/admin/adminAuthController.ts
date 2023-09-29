@@ -102,33 +102,6 @@ async function changepassword(req:Request,res:Response){
    res.json({isPasswordChanged:true})
 }
 
-async function getCharts(req:Request,res:Response){
-
-   try {
-      const listingDistribution = await produtSchema.aggregate([
-        {
-          $group: {
-            _id: '$brandId', // Assuming 'brandId' represents the brand ID in your product schema.
-            count: { $sum: 1 },
-          },
-        },
-      ]);
-
-      const brands = await brandSchema.find()
-  
-   
-      const labels = brands.map(brand=>brand.name)
-      const counts = listingDistribution.map((entry:any) => entry.count);
-  
-      res.json({ labels, counts });
-    } catch (error) {
-      console.error(error);
-    }
-  
 
 
-
-}
-
-
-export default {login,verifyEmail,verifyOtp,changepassword,getCharts}
+export default {login,verifyEmail,verifyOtp,changepassword}

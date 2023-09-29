@@ -141,10 +141,43 @@ async function getEditProduct(req, res) {
         return res.json({ err: 'product not found' });
     }
 }
+async function deleteimage(req, res) {
+    try {
+        let { productId, image } = req.body;
+        const product = await productSchema_1.default.findOne({ _id: productId });
+        let removed = product?.images.splice(image, 1);
+        if (removed) {
+            await cloudinery_1.default.deleteImage(removed[0].cloudinary_id);
+        }
+        if (product) {
+            await product.save();
+        }
+        res.json({ imageRemoved: true });
+    }
+    catch (err) {
+    }
+}
+async function uploadimages(req, res) {
+    let images = await cloudinery_1.default.multiFiles(req.files);
+    console.log(req.body);
+    const { productid } = req.body;
+    let product = await productSchema_1.default.findOne({ _id: productid });
+    product?.images.push(...images);
+    await product?.save();
+    res.json({ uploaded: true, images: images });
+}
+async function updateProduct(req, res) {
+    let { price, year, fuel, kmDriven, Location, no_of_owners, productid } = req.body;
+    await productSchema_1.default.findOneAndUpdate({ _id: productid }, { $set: { price, year, fuel, kmDriven, Location, no_of_owners, productid } });
+    res.json({ updated: true });
+}
 exports.default = {
     getProducts, getBrands, addProduct, searchProduct,
     getsingleProduct,
     getPostedProducts,
-    getEditProduct
+    getEditProduct,
+    deleteimage,
+    uploadimages,
+    updateProduct
 };
 //# sourceMappingURL=userProductController.js.map

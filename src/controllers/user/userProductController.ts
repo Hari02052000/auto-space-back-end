@@ -243,9 +243,60 @@ async function getEditProduct(req:Request,res:Response){
  
 }
 
+async function deleteimage(req:Request,res:Response){
+      
+        try{
+        let{productId,image}=req.body
+       const product= await productModel.findOne({_id:productId})
+      let removed= product?.images.splice(image,1)
+      if(removed){
+
+        await cloudinery.deleteImage(removed[0].cloudinary_id)
+
+
+      }
+       if(product){
+        await product.save()
+       }
+    
+      res.json({imageRemoved:true})
+    }
+    catch(err){
+
+    }
+}
+
+async function uploadimages(req:Request,res:Response){
+
+    let images = await cloudinery.multiFiles(req.files as Express.Multer.File[])
+    console.log(req.body)
+    const {productid} = req.body
+
+   let product =  await productModel.findOne({_id:productid})
+
+   product?.images.push(...images)
+   await product?.save()
+
+    res.json({uploaded:true,images:images})
+
+}
+
+async function updateProduct(req:Request,res:Response){
+
+  let  {price,year,fuel,kmDriven,Location,no_of_owners,productid} = req.body
+
+   await productModel.findOneAndUpdate({_id:productid},{$set:{price,year,fuel,kmDriven,Location,no_of_owners,productid}})
+   res.json({updated:true})
+}
+
+
+
 export default {
     getProducts, getBrands, addProduct, searchProduct,
     getsingleProduct,
     getPostedProducts,
-    getEditProduct
+    getEditProduct,
+    deleteimage,
+    uploadimages,
+    updateProduct
 }

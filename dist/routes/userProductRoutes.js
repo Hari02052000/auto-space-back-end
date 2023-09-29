@@ -15,5 +15,8 @@ router.post('/add-product', isAuth_1.default.isAuth, multer_1.default.uploadFile
 router.get('/single-product/:id', isAuth_1.default.isBlocked, userProductController_1.default.getsingleProduct);
 router.get('/edit-product/:id', isAuth_1.default.isAuth, userProductController_1.default.getEditProduct);
 router.get('/posted-products', isAuth_1.default.isAuth, userProductController_1.default.getPostedProducts);
+router.post('/delete-image', isAuth_1.default.isAuth, userProductController_1.default.deleteimage);
+router.post('/upload-new-images', isAuth_1.default.isAuth, multer_1.default.uploadFiles, userProductController_1.default.uploadimages);
+router.post('/update-product', isAuth_1.default.isAuth, userProductController_1.default.updateProduct);
 exports.default = router;
 //# sourceMappingURL=userProductRoutes.js.map

@@ -7,8 +7,6 @@ const adminSchema_1 = __importDefault(require("../../models/adminSchema"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const sendmail_1 = __importDefault(require("../../helpers/sendmail"));
-const productSchema_1 = __importDefault(require("../../models/productSchema"));
-const brandSchema_1 = __importDefault(require("../../models/brandSchema"));
 const maxage = 3 * 24 * 60 * 60;
 const createToken = (id) => {
     return jsonwebtoken_1.default.sign({ id }, 'key1', { expiresIn: maxage });
@@ -70,24 +68,5 @@ async function changepassword(req, res) {
     await adminSchema_1.default.findOneAndUpdate({ email: email }, { $set: { password: password } });
     res.json({ isPasswordChanged: true });
 }
-async function getCharts(req, res) {
-    try {
-        const listingDistribution = await productSchema_1.default.aggregate([
-            {
-                $group: {
-                    _id: '$brandId',
-                    count: { $sum: 1 },
-                },
-            },
-        ]);
-        const brands = await brandSchema_1.default.find();
-        const labels = brands.map(brand => brand.name);
-        const counts = listingDistribution.map((entry) => entry.count);
-        res.json({ labels, counts });
-    }
-    catch (error) {
-        console.error(error);
-    }
-}
-exports.default = { login, verifyEmail, verifyOtp, changepassword, getCharts };
+exports.default = { login, verifyEmail, verifyOtp, changepassword };
 //# sourceMappingURL=adminAuthController.js.map
