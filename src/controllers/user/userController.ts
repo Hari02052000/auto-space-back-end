@@ -19,12 +19,9 @@ async function getMessages(req:Request,res:Response){
     
     const senderId = res.locals.userid
     const { receverId,productId} = req.query;
-    console.log(receverId,productId)
-    console.log(senderId)
 
     const recever = await userSchema.findOne({_id:receverId})
     const product = await productSchema.findOne({_id:productId}).populate({path:'brand'}).populate({path:'model'}).populate({path:'option'})
-      //update the messages status as read and send to client
 
       await messageSchema.updateMany({reciverId:senderId},{$set:{ status:MessageStatus.Read  }})
 
@@ -45,7 +42,6 @@ async function getMessages(req:Request,res:Response){
         ]
           }
       ).sort({'timestamps':1 })
-      console.log(messages)
    res.json({messages:messages,product:product,logedUser:senderId,recever:recever})
 }
 

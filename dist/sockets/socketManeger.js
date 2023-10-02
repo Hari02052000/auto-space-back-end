@@ -87,7 +87,6 @@ function socketHandilers(io) {
                     userSocketMap.set(senderid, socket.id);
                 }
                 socket.on('sendMessage', async (data) => {
-                    console.log(data);
                     const productid = data.productid;
                     const receverid = data.recevierid;
                     const text = data.text;
@@ -121,6 +120,7 @@ function socketHandilers(io) {
                     if (receiverSocketId) {
                         newMessage.status = messageSchema_1.MessageStatus.Read;
                         await newMessage.save();
+                        console.log('sending to recever');
                         userNameSpace.to(receiverSocketId).emit('chat-saved', newMessage);
                     }
                     if (alertSocketId && !receiverSocketId) {
@@ -131,6 +131,7 @@ function socketHandilers(io) {
                         alert.to(alertSocketId).emit('newMessage', alertMsg);
                     }
                     if (senderSocketId) {
+                        console.log('sending to sender');
                         userNameSpace.to(senderSocketId).emit('chat-saved', newMessage);
                     }
                 });

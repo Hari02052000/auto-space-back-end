@@ -13,7 +13,7 @@ function socketHandilers(io: SocketIOServer) {
         const userNameSpace = io.of('/user-chat')
         const alert = io.of('/user-alert')
 
-        alert.on('connection', async (socket) => {
+         alert.on('connection', async (socket) => {
             console.log('connected to alert')
             const userToken = socket.handshake.auth.token
             const alertUserid = await chatHelper.tokenValidate(userToken)
@@ -86,11 +86,11 @@ function socketHandilers(io: SocketIOServer) {
 
 
                 socket.on('sendMessage', async (data: any) => {
-                    console.log(data)
                     const productid = data.productid
                     const receverid = data.recevierid
                     const text = data.text
                     console.log(productid, receverid, text)
+
                     const newMessage = await messageSchema.create({
                         senderId: senderid,
                         reciverId: receverid,
@@ -128,13 +128,14 @@ function socketHandilers(io: SocketIOServer) {
 
                         newMessage.status = MessageStatus.Read
                         await newMessage.save()
-
+                        console.log('sending to recever')
                         userNameSpace.to(receiverSocketId).emit('chat-saved', newMessage);
 
                     }
 
 
                     if (alertSocketId && !receiverSocketId) {
+
                         newMessage.status = MessageStatus.Delivered
                         await newMessage.save()
                         const alertMsg = newMessage
@@ -143,6 +144,8 @@ function socketHandilers(io: SocketIOServer) {
                     }
 
                     if (senderSocketId) {
+                       
+                        console.log('sending to sender')
 
                         userNameSpace.to(senderSocketId).emit('chat-saved', newMessage);
 
@@ -162,7 +165,7 @@ function socketHandilers(io: SocketIOServer) {
 
 
 
-            socket.on('disconnect', (socket) => {
+             socket.on('disconnect', (socket) => {
                 userSocketMap.delete(senderid);
 
                 console.log('dissconnected')

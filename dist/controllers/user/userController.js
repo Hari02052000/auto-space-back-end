@@ -40,11 +40,8 @@ async function getprofile(req, res) {
 async function getMessages(req, res) {
     const senderId = res.locals.userid;
     const { receverId, productId } = req.query;
-    console.log(receverId, productId);
-    console.log(senderId);
     const recever = await userSchema_1.default.findOne({ _id: receverId });
     const product = await productSchema_1.default.findOne({ _id: productId }).populate({ path: 'brand' }).populate({ path: 'model' }).populate({ path: 'option' });
-    //update the messages status as read and send to client
     await messageSchema_1.default.updateMany({ reciverId: senderId }, { $set: { status: messageSchema_1.MessageStatus.Read } });
     const messages = await messageSchema_1.default.find({ $and: [
             {
@@ -58,7 +55,6 @@ async function getMessages(req, res) {
             }
         ]
     }).sort({ 'timestamps': 1 });
-    console.log(messages);
     res.json({ messages: messages, product: product, logedUser: senderId, recever: recever });
 }
 async function editDetails(req, res) {
