@@ -41,5 +41,5 @@ app.use('/admin/model', adminBrandRoutes_1.default);
 app.use('/admin/option', adminBrandRoutes_1.default);
 app.use('/admin/plans', adminPlanRoutes_1.default);
 app.use('/admin', adminRoutes_1.default);
-server.listen(process.env.PORT, () => console.log('server started...'));
+server.listen(process.env.PORT, () => console.log('server started...', process.env.PORT));
 //# sourceMappingURL=index.js.map
