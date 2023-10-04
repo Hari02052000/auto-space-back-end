@@ -102,7 +102,10 @@ async function verifyOnlinePayment(req, res) {
             const subscription = await subscribtionSchema_1.default.findOneAndUpdate({ _id: order.receipt }, { $set: { isPayed: true } });
             console.log(subscription);
             const selectedplan = await plansSchema_1.default.findOne({ _id: subscription?.plan });
-            await userSchema_1.default.findOneAndUpdate({ _id: userId }, { $set: { alowedCars: selectedplan?.no_of_cars, isTrailUsed: true } });
+            await userSchema_1.default.findOneAndUpdate({ _id: userId }, {
+                $inc: { alowedCars: selectedplan?.no_of_cars },
+                $set: { isTrailUsed: true }
+            });
             res.json({ isPayed: true });
         }
         else {

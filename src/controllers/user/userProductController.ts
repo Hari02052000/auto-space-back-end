@@ -7,6 +7,7 @@ import userschema from "../../models/userSchema"
 import cloudinery from "../../helpers/cloudinery"
 import mongoose from "mongoose"
 import products from "razorpay/dist/types/products"
+import subscription from "../../models/subscribtionSchema"
 
 async function getProducts(req: Request, res: Response) {
 
@@ -79,7 +80,22 @@ async function addProduct(req: Request, res: Response) {
     const user = await userschema.findOne({ _id: userid })
     //find one subscription id is this userid end date greater than or equal to today
     //if set allowed cars is zero and message plan expaired 
+
     if (user) {
+
+        const currentDate = new Date();
+
+        const isSubscription = await subscription.findOne({
+            user:user._id ,
+            endDate: { $gte: currentDate }
+        });
+
+        if(!isSubscription){
+           await userschema.findOneAndUpdate({_id:user._id},{$set:{alowedCars:0}})
+           return  res.json({ err: 'your plan is expaired ' })
+
+        }
+        
 
         if (user.alowedCars > 0) {
 

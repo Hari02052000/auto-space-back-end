@@ -9,6 +9,7 @@ const optionSchema_1 = __importDefault(require("../../models/optionSchema"));
 const modelSchema_1 = __importDefault(require("../../models/modelSchema"));
 const userSchema_1 = __importDefault(require("../../models/userSchema"));
 const cloudinery_1 = __importDefault(require("../../helpers/cloudinery"));
+const subscribtionSchema_1 = __importDefault(require("../../models/subscribtionSchema"));
 async function getProducts(req, res) {
     try {
         const filter = {
@@ -51,6 +52,15 @@ async function addProduct(req, res) {
     //find one subscription id is this userid end date greater than or equal to today
     //if set allowed cars is zero and message plan expaired 
     if (user) {
+        const currentDate = new Date();
+        const isSubscription = await subscribtionSchema_1.default.findOne({
+            user: user._id,
+            endDate: { $gte: currentDate }
+        });
+        if (!isSubscription) {
+            await userSchema_1.default.findOneAndUpdate({ _id: user._id }, { $set: { alowedCars: 0 } });
+            return res.json({ err: 'your plan is expaired ' });
+        }
         if (user.alowedCars > 0) {
             let { brand, model, option, price, year, fuel, kmDriven, location, no_of_owners } = JSON.parse(req.body.formFields);
             let images = await cloudinery_1.default.multiFiles(req.files);
