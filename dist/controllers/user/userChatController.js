@@ -60,7 +60,7 @@ async function getChats(req, res) {
                                 $and: [
                                     { $eq: ['$productId', '$$productId'] },
                                     { $eq: ['$senderId', '$$senderId'] },
-                                    { $eq: ['$status', 'unread'] }
+                                    { $ne: ['$status', 'read'] }
                                 ]
                             }
                         }
