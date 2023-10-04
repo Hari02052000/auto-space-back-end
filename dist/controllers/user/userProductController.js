@@ -13,6 +13,7 @@ async function getProducts(req, res) {
     try {
         const filter = {
             isListed: true,
+            isSold: false
         };
         if (res.locals.userid) {
             filter.user = { $ne: res.locals.userid };
@@ -171,6 +172,11 @@ async function updateProduct(req, res) {
     await productSchema_1.default.findOneAndUpdate({ _id: productid }, { $set: { price, year, fuel, kmDriven, Location, no_of_owners, productid } });
     res.json({ updated: true });
 }
+async function markSold(req, res) {
+    const productid = req.body.productid;
+    await productSchema_1.default.findOneAndUpdate({ _id: productid }, { $set: { isSold: true } });
+    res.json({ marked: true });
+}
 exports.default = {
     getProducts, getBrands, addProduct, searchProduct,
     getsingleProduct,
@@ -178,6 +184,7 @@ exports.default = {
     getEditProduct,
     deleteimage,
     uploadimages,
-    updateProduct
+    updateProduct,
+    markSold
 };
 //# sourceMappingURL=userProductController.js.map

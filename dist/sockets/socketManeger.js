@@ -68,6 +68,10 @@ function socketHandilers(io) {
                 };
                 socket.join(alertUserid);
                 alert.to(alertUserid).emit('connected', data);
+                socket.on('makeZero', async () => {
+                    await messageSchema_1.default.updateMany({ reciverId: alertUserid }, { $set: { status: messageSchema_1.MessageStatus.Delivered } });
+                    console.log('make zero');
+                });
                 // alert.emit('connected', data)
                 //  await messageSchema.updateMany({ reciverId: alertUserid }, { $set: { status: MessageStatus.Delivered } })
                 socket.on('disconnect', () => {

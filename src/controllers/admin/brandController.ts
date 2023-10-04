@@ -84,7 +84,6 @@ async function addModel(req: Request, res: Response) {
 async function addOption(req: Request, res: Response) {
 
     const { optionName, brandId, modelId } = req.body
-
     const oldOption = await optionSchema.findOne({ name: optionName })
     if (oldOption) {
 
@@ -138,9 +137,30 @@ async function editBrand(req: Request, res: Response) {
 
 async function editmodel(req: Request, res: Response) {
 
+    const { modeldName, id } = req.body
+    console.log(req.body)
+    console.log(await modelSchema.findOne({ _id: id }))
+    const oldmodel = await modelSchema.findOne({ name: modeldName })
+    console.log(oldmodel)
+    if (oldmodel) {
+        return res.json({ err: 'name allredy exist or nothing to update' })
+    }
+    await modelSchema.findOneAndUpdate({ _id: id }, { $set: { name: modeldName } })
+
+    res.json({ edited: true })
+
+
 }
 
 async function editoption(req: Request, res: Response) {
+
+    const { optionName, id } = req.body
+
+    await optionSchema.findOneAndUpdate({ _id: id }, { $set: { name: optionName } })
+
+    res.json({ edited: true })
+
+
 
 }
 

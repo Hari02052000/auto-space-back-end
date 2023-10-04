@@ -18,11 +18,13 @@ async function getProducts(req: Request, res: Response) {
 
         interface filterInterface {
             isListed: boolean,
+            isSold:boolean,
             user?: notUser
         }
 
         const filter: filterInterface = {
             isListed: true,
+            isSold:false
 
         }
 
@@ -289,7 +291,14 @@ async function updateProduct(req:Request,res:Response){
    res.json({updated:true})
 }
 
+async function markSold(req:Request,res:Response) {
 
+    const productid = req.body.productid
+
+    await productModel.findOneAndUpdate({_id:productid},{$set:{isSold:true}})
+    res.json({marked:true})
+    
+}
 
 export default {
     getProducts, getBrands, addProduct, searchProduct,
@@ -298,5 +307,6 @@ export default {
     getEditProduct,
     deleteimage,
     uploadimages,
-    updateProduct
+    updateProduct,
+    markSold
 }

@@ -8,7 +8,7 @@ import brandSchema from "../../models/brandSchema"
 
 const maxage=3*24*60*60;
 const createToken=(id:string)=>{
-   return jwt.sign({id},'key1',{expiresIn:maxage})
+   return jwt.sign({id},'key2',{expiresIn:maxage})
 }
 
 

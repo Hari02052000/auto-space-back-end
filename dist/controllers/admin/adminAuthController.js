@@ -9,7 +9,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const sendmail_1 = __importDefault(require("../../helpers/sendmail"));
 const maxage = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-    return jsonwebtoken_1.default.sign({ id }, 'key1', { expiresIn: maxage });
+    return jsonwebtoken_1.default.sign({ id }, 'key2', { expiresIn: maxage });
 };
 async function login(req, res) {
     try {

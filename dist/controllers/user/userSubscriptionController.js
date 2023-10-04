@@ -100,7 +100,8 @@ async function verifyOnlinePayment(req, res) {
         hmac = await hmac.digest('hex');
         if (hmac == response.razorpay_signature) {
             const subscription = await subscribtionSchema_1.default.findOneAndUpdate({ _id: order.receipt }, { $set: { isPayed: true } });
-            const selectedplan = await plansSchema_1.default.findOne({ _id: subscription?._id });
+            console.log(subscription);
+            const selectedplan = await plansSchema_1.default.findOne({ _id: subscription?.plan });
             await userSchema_1.default.findOneAndUpdate({ _id: userId }, { $set: { alowedCars: selectedplan?.no_of_cars, isTrailUsed: true } });
             res.json({ isPayed: true });
         }

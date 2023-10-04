@@ -17,5 +17,6 @@ router.get('/posted-products',authHelper.isAuth,userProductController.getPostedP
 router.post('/delete-image',authHelper.isAuth,userProductController.deleteimage)
 router.post('/upload-new-images',authHelper.isAuth,userHelpers.uploadFiles,userProductController.uploadimages)
 router.post('/update-product',authHelper.isAuth,userProductController.updateProduct)
+router.post('/mark-sold',authHelper.isAuth,userProductController.markSold)
 
 export default router

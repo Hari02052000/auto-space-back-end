@@ -94,8 +94,21 @@ async function editBrand(req, res) {
     res.json({ edited: true });
 }
 async function editmodel(req, res) {
+    const { modeldName, id } = req.body;
+    console.log(req.body);
+    console.log(await modelSchema_1.default.findOne({ _id: id }));
+    const oldmodel = await modelSchema_1.default.findOne({ name: modeldName });
+    console.log(oldmodel);
+    if (oldmodel) {
+        return res.json({ err: 'name allredy exist or nothing to update' });
+    }
+    await modelSchema_1.default.findOneAndUpdate({ _id: id }, { $set: { name: modeldName } });
+    res.json({ edited: true });
 }
 async function editoption(req, res) {
+    const { optionName, id } = req.body;
+    await optionSchema_1.default.findOneAndUpdate({ _id: id }, { $set: { name: optionName } });
+    res.json({ edited: true });
 }
 exports.default = { createBrand, getBrands, addModel, addOption, editBrand, editmodel, editoption };
 //# sourceMappingURL=brandController.js.map
