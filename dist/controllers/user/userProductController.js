@@ -91,7 +91,8 @@ async function searchProduct(req, res) {
     let { search, sortBy, filter } = req.query;
     console.log(req.query);
     const query = {
-        isListed: true
+        isListed: true,
+        isSold: false,
     };
     if (search == 'undefined') {
         search = '';

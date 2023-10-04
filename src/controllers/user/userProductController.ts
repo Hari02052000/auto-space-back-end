@@ -154,7 +154,9 @@ async function searchProduct(req: Request, res: Response) {
     console.log(req.query)
 
     const query: any = {
-        isListed: true
+        isListed: true,
+        isSold:false,
+
     }
 
     if (search == 'undefined') {
