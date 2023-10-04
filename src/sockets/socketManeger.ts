@@ -51,8 +51,8 @@ function socketHandilers(io: SocketIOServer) {
 
                  socket.on('makeZero',async()=>{
 
-                    await messageSchema.updateMany({ reciverId: alertUserid }, { $set: { status: MessageStatus.Delivered } })
-                    console.log('make zero')
+                    // await messageSchema.updateMany({ reciverId: alertUserid }, { $set: { status: MessageStatus.Delivered } })
+                    // console.log('make zero')
 
                  }
                  )
