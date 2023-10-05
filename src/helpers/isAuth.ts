@@ -38,7 +38,7 @@ console.log(headers)
                     sendmail.sendOtp(user.email)
                     res.locals.email = user?.email
                     console.log('email not verified')
-                    return res.json({err:'user not verified'})
+                    return res.json({err:'user not verified',email:user?.email})
                  }
                  
                  res.locals.userid = user?._id

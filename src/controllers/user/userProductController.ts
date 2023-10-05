@@ -83,6 +83,12 @@ async function addProduct(req: Request, res: Response) {
 
     if (user) {
 
+        if(user.alowedCars == 0){
+
+           return res.json({ err: 'alowedCars is zero' })
+
+        }
+
         const currentDate = new Date();
 
         const isSubscription = await subscription.findOne({
@@ -92,7 +98,7 @@ async function addProduct(req: Request, res: Response) {
 
         if(!isSubscription){
            await userschema.findOneAndUpdate({_id:user._id},{$set:{alowedCars:0}})
-           return  res.json({ err: 'your plan is expaired ' })
+           return  res.json({ err: 'your plan is expaired' })
 
         }
         
